@@ -1,4 +1,5 @@
-﻿using BlazingPizzas.Server.Data;
+﻿using BlazingPizzas.Server;
+using BlazingPizzas.Server.Data;
 using BlazingPizzas.Server.Data.Repository;
 using BlazingPizzas.Server.Data.UnitOfWork;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
@@ -23,6 +24,17 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 
 var app = builder.Build();
+
+// Initialize database and seed data
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+    if (context.Database.EnsureCreated())
+    {
+        SeedData.SeedDataContext(context);
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
