@@ -18,6 +18,9 @@ namespace BlazingPizzas.Server.Data.UnitOfWork
         private IRepository<PizzaSpecial> _SpecialsRepository;
         public IRepository<PizzaSpecial> SpecialsRepository => _SpecialsRepository ?? new Repository<PizzaSpecial>(_context);
 
+        private IRepository<Topping> _ToppingsRepository;
+        public IRepository<Topping> ToppingsRepository => _ToppingsRepository ?? new Repository<Topping>(_context);
+
         #endregion
 
         public void Dispose()

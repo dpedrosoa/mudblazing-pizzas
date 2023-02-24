@@ -7,6 +7,7 @@ namespace BlazingPizzas.Server.Data.UnitOfWork
     public interface IUnitOfWork : IDisposable
     {
         public IRepository<PizzaSpecial> SpecialsRepository { get; }
+        public IRepository<Topping> ToppingsRepository { get; }
 
         Task<bool> Save();   
     }
