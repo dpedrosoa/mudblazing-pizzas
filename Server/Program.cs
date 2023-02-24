@@ -1,4 +1,6 @@
 ﻿using BlazingPizzas.Server.Data;
+using BlazingPizzas.Server.Data.Repository;
+using BlazingPizzas.Server.Data.UnitOfWork;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 // Add services to the container.
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
