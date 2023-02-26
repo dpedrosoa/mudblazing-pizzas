@@ -1,7 +1,36 @@
 ﻿@page "/"
+@inject HttpClient HttpClient
 
 <PageTitle>Blazing Pizzas</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+@if(specials == null)
+{
+    <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+}
+else
+{
+    <MudGrid>
+        @foreach (var special in specials)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard>
+                    <MudCardMedia Image="@special.ImageUrl" Height="200" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@special.Name</MudText>
+                        <MudText Typo="Typo.body2">@special.Description</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
+@code{
+    List<PizzaSpecial> specials;
+
+    protected override async Task OnInitializedAsync()
+    {
+        specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>("api/specials");
+    }
+}
