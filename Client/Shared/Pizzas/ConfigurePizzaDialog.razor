@@ -37,7 +37,12 @@
                     @foreach (var toppingId in selectedToppings)
                     {
                         var topp = @toppings.Find(x => x.Id == toppingId);
-                        <MudChip Color="Color.Primary">@topp.Name - $ @topp.GetFormattedPrice()</MudChip>
+                        <MudChip Color="Color.Primary">
+                            @topp.Name - $ @topp.GetFormattedPrice()
+                            <MudIconButton Icon="@Icons.Material.Filled.Close" 
+                                Style="@($"color:{Colors.Grey.Lighten5}")"
+                                OnClick="@(()=>RemoveTopping(toppingId))"></MudIconButton>
+                        </MudChip>
                     }
                 </div>
             }
@@ -88,8 +93,12 @@
         {
             Pizza.Toppings.Add(new PizzaTopping { Topping = topp });
         }
-        
+
         return text;
+    }
+    private void RemoveTopping(int toppingId)
+    {
+        selectedToppings = selectedToppings.Where(x => x != toppingId);
     }
 
 }
