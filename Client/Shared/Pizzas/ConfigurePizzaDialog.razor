@@ -3,7 +3,7 @@
 <MudDialog>
     <DialogContent>
         <MudText>@Pizza.Special.Description</MudText>
-        <div class="d-flex gap-3 align-center mt-3">
+        <div class="d-flex gap-3 align-center mt-4">
             <MudText>Size:</MudText>
             <MudSlider @bind-Value="@Pizza.Size" ValueLabel="true" Step="1"
                        Min="@Pizza.MinimumSize" Max="@Pizza.MaximumSize">
@@ -17,18 +17,24 @@
         @if(toppings != null)
         {
             <div class="d-flex gap-3 align-end">
-                <MudText Style="margin-bottom: 5px;">Extra Toppings:</MudText>
-                <MudSelect T="int" MultiSelection="true"
-                       Dense="true" AnchorOrigin="Origin.BottomCenter"
+                <MudText Class="mt-5 mb-1">Extra Toppings:</MudText>
+                @if (MaxToppingsReached())
+                {
+                    <MudText Class="mt-5 mb-1">(Maximum reached)</MudText>
+                }else{
+                    <MudSelect T="int" MultiSelection="true" Dense="true" 
+                       Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                        MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
                        @bind-Value="value" @bind-SelectedValues="selectedToppings">
-                    @foreach (var topping in toppings)
-                    {
-                        <MudSelectItem T="int" Value="@topping.Id">
-                            @topping.Name - ($ @topping.GetFormattedPrice())
-                        </MudSelectItem>
-                    }
-                </MudSelect>
+                        @foreach (var topping in toppings)
+                        {
+                            <MudSelectItem T="int" Value="@topping.Id">
+                                @topping.Name - ($ @topping.GetFormattedPrice())
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                
             </div>
             
             @if (selectedToppings.Any())
@@ -100,5 +106,8 @@
     {
         selectedToppings = selectedToppings.Where(x => x != toppingId);
     }
-
+    private bool MaxToppingsReached()
+    {
+        return selectedToppings.Count() >= 6;
+    }
 }
