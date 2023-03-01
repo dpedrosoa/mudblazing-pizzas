@@ -3,31 +3,37 @@
 <MudDialog>
     <DialogContent>
         <MudText>@Pizza.Special.Description</MudText>
-        <div>
-            <MudText>Size</MudText>
+        <div class="d-flex gap-3 align-center mt-3">
+            <MudText>Size:</MudText>
             <MudSlider @bind-Value="@Pizza.Size" ValueLabel="true" Step="1"
                        Min="@Pizza.MinimumSize" Max="@Pizza.MaximumSize">
             </MudSlider>
-            <MudText>(@Pizza.Size") - $ @Pizza.GetFormattedBasePrice()</MudText>
+            <MudText Style="white-space:nowrap;" Align="Align.Right">
+                (@Pizza.Size") - $ @Pizza.GetFormattedBasePrice()
+            </MudText>
 
         </div>
         
         @if(toppings != null)
         {
-            <MudSelect T="int" Label="Extra Toppings" MultiSelection="true"
-                   Dense="true" AnchorOrigin="Origin.BottomCenter"
-                   MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
-                   @bind-Value="value" @bind-SelectedValues="selectedToppings">
-                @foreach (var topping in toppings)
-                {
-                    <MudSelectItem T="int" Value="@topping.Id">
-                        @topping.Name - ($ @topping.GetFormattedPrice())
-                    </MudSelectItem>
-                }
-            </MudSelect>
+            <div class="d-flex gap-3 align-end">
+                <MudText Style="margin-bottom: 5px;">Extra Toppings:</MudText>
+                <MudSelect T="int" MultiSelection="true"
+                       Dense="true" AnchorOrigin="Origin.BottomCenter"
+                       MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                       @bind-Value="value" @bind-SelectedValues="selectedToppings">
+                    @foreach (var topping in toppings)
+                    {
+                        <MudSelectItem T="int" Value="@topping.Id">
+                            @topping.Name - ($ @topping.GetFormattedPrice())
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </div>
+            
             @if (selectedToppings.Any())
             {
-                <div class="d-flex  align-center mt-2">
+                <div class="d-flex flex-wrap justify-center align-center mt-2">
                     @foreach (var toppingId in selectedToppings)
                     {
                         var topp = @toppings.Find(x => x.Id == toppingId);
@@ -36,14 +42,16 @@
                 </div>
             }
         }
-        
-        
+        <div class="d-flex justify-space-between mt-6 mb-2">
+            <MudButton Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+            <MudPaper Class="d-flex flex-wrap justify-center align-center" Elevation="0">
+                <MudText Class="mr-1">Total Price:</MudText>
+                <MudText Typo="Typo.h6"> $ @Pizza.GetFormattedTotalPrice()</MudText>
+            </MudPaper>
+            <MudButton Variant="Variant.Filled" OnClick="Submit" Color="Color.Success">Order</MudButton>
+        </div>
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudText>Total Price: @Pizza.GetFormattedTotalPrice()</MudText>
-        <MudButton Variant="Variant.Filled" OnClick="Submit">Save</MudButton>
-    </DialogActions>
+        
 </MudDialog>
 
 @code {
@@ -69,7 +77,7 @@
         string text = "-- Select --";
         if (selectedValues.Count > 0)
         {
-            text = $"{selectedValues.Count} topping{(selectedValues.Count > 1 ? "s have" : " has")} been selected";
+            text = $"{selectedValues.Count} topping{(selectedValues.Count > 1 ? "s " : " ")} selected";
         }
 
         // Set selected Toppings

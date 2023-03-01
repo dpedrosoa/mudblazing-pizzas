@@ -50,7 +50,11 @@ else
         var parameters = new DialogParameters();
         parameters.Add("Pizza", configuringPizza);
 
+        var options = new DialogOptions()
+            {
+                MaxWidth = MaxWidth.Small, Position = DialogPosition.TopCenter
+            };
 
-        DialogService.Show<ConfigurePizzaDialog>(special.Name, parameters);
+        DialogService.Show<ConfigurePizzaDialog>(special.Name, parameters, options);
     }
 }
