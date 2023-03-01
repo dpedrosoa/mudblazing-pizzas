@@ -4,37 +4,64 @@
 
 <PageTitle>Blazing Pizzas</PageTitle>
 
-@if(specials == null)
-{
-    <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
-}
-else
-{
-    <MudGrid>
-        @foreach (var special in specials)
-        {
-            <MudItem xs="12" sm="6" md="4" >
-                <MudCard Elevation="25" Style="height: 100%"
-                        @onclick="@(()=>OpenConfigurePizzaDialog(special))">
+@*Pizzas main container*@
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
+    @if (specials == null)
+    {
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var special in specials)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="25" Style="height: 100%"
+                     @onclick="@(()=>OpenConfigurePizzaDialog(special))">
 
-                    <MudCardMedia Image="@special.ImageUrl" Height="200"/>
+                        <MudCardMedia Image="@special.ImageUrl" Height="200" />
 
-                    <MudCardContent>
-                        <MudText Typo="Typo.h5">@special.Name</MudText>
-                        <MudText Typo="Typo.body2">@special.Description</MudText>
-                        <MudText Typo="Typo.h5">$ @special.GetFormattedBasePrice()</MudText>
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
-        }
-    </MudGrid>
-}
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">@special.Name</MudText>
+                            <MudText Typo="Typo.body2">@special.Description</MudText>
+                            <MudText Typo="Typo.h5">$ @special.GetFormattedBasePrice()</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@*Order Sidebar*@
+<MudDrawer @bind-Open="@drawerOpen" Elevation="1" Anchor="Anchor.Right" Color="Color.Dark"
+           ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Persistent" >
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Your Order</MudText>
+    </MudDrawerHeader>
+    @foreach (var pizza in order.Pizzas)
+    {
+        <MudPaper Class="ma-2 pa-2" Style="@($"color: {Colors.Grey.Lighten4}; background-color: #505050;")">
+            <div class="d-flex flex-row align-center">
+                <MudText><b>@pizza.Size" @pizza.Special.Name</b></MudText>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"></MudIconButton>
+            </div>
+            @foreach (var topping in pizza.Toppings)
+            {
+                <MudText Class="ml-3">+ @topping.Topping.Name</MudText>
+            }
+            <MudText Typo="Typo.h6"><b>$ @pizza.GetFormattedTotalPrice()</b></MudText>
+        </MudPaper>
+    }
+</MudDrawer>
 
 
-@code{
+@code {
     List<PizzaSpecial> specials;
     Pizza configuringPizza;
     Order order = new Order();
+    bool drawerOpen = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,11 +80,12 @@ else
 
         var options = new DialogOptions()
             {
-                MaxWidth = MaxWidth.Small, Position = DialogPosition.TopCenter
+                MaxWidth = MaxWidth.Small,
+                Position = DialogPosition.TopCenter
             };
 
         var result = await DialogService.Show<ConfigurePizzaDialog>(special.Name, parameters, options).Result;
-        if(result.Cancelled)
+        if (result.Cancelled)
         {
             configuringPizza = null;
         }
@@ -66,7 +94,8 @@ else
             SubmitOrder();
         }
     }
-    private void SubmitOrder(){
+    private void SubmitOrder()
+    {
         order.Pizzas.Add(configuringPizza);
         configuringPizza = null;
         Console.WriteLine(order.Pizzas.Count);
