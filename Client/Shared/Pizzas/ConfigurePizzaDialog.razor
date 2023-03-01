@@ -1,0 +1,87 @@
+﻿@inject HttpClient HttpClient
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@Pizza.Special.Description</MudText>
+        <div>
+            <MudText>Size</MudText>
+            <MudSlider @bind-Value="@Pizza.Size" ValueLabel="true" Step="1"
+                       Min="@Pizza.MinimumSize" Max="@Pizza.MaximumSize">
+            </MudSlider>
+            <MudText>(@Pizza.Size") - $ @Pizza.GetFormattedBasePrice()</MudText>
+
+        </div>
+        
+        @if(toppings != null)
+        {
+            <MudSelect T="int" Label="Extra Toppings" MultiSelection="true"
+                   Dense="true" AnchorOrigin="Origin.BottomCenter"
+                   MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))"
+                   @bind-Value="value" @bind-SelectedValues="selectedToppings">
+                @foreach (var topping in toppings)
+                {
+                    <MudSelectItem T="int" Value="@topping.Id">
+                        @topping.Name - ($ @topping.GetFormattedPrice())
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            @if (selectedToppings.Any())
+            {
+                <div class="d-flex  align-center mt-2">
+                    @foreach (var toppingId in selectedToppings)
+                    {
+                        var topp = @toppings.Find(x => x.Id == toppingId);
+                        <MudChip Color="Color.Primary">@topp.Name - $ @topp.GetFormattedPrice()</MudChip>
+                    }
+                </div>
+            }
+        }
+        
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudText>Total Price: @Pizza.GetFormattedTotalPrice()</MudText>
+        <MudButton Variant="Variant.Filled" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Pizza Pizza { get; set; }
+    List<Topping> toppings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        toppings = await HttpClient.GetFromJsonAsync<List<Topping>>("api/toppings");
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+
+    private int value { get; set; } = -1;
+    private IEnumerable<int> selectedToppings { get; set; } = new HashSet<int>();
+
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        string text = "-- Select --";
+        if (selectedValues.Count > 0)
+        {
+            text = $"{selectedValues.Count} topping{(selectedValues.Count > 1 ? "s have" : " has")} been selected";
+        }
+
+        // Set selected Toppings
+        var myToppings = toppings.Where(x => selectedToppings.Contains(x.Id)).ToList();
+
+        Pizza.Toppings = new List<PizzaTopping>();
+        foreach (var topp in myToppings)
+        {
+            Pizza.Toppings.Add(new PizzaTopping { Topping = topp });
+        }
+        
+        return text;
+    }
+
+}

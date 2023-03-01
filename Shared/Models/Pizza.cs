@@ -19,12 +19,16 @@ namespace BlazingPizzas.Shared.Models
         public int SpecialId { get; set; }
         public PizzaSpecial Special { get; set; }
         public int OrderId { get; set; }
-        public int Size { get; set; }
+        public int Size { get; set; } = DefaultSize;
         public List<PizzaTopping> Toppings { get; set; } = new List<PizzaTopping>();
 
         public decimal GetBasePrice()
         {
             return ((decimal)Size / (decimal)DefaultSize) * Special.BasePrice;
+        }
+        public string GetFormattedBasePrice()
+        {
+            return GetBasePrice().ToString("0.00");
         }
 
         public decimal GetTotalPrice()
