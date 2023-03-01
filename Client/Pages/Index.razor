@@ -34,13 +34,14 @@ else
 @code{
     List<PizzaSpecial> specials;
     Pizza configuringPizza;
+    Order order = new Order();
 
     protected override async Task OnInitializedAsync()
     {
         specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>("api/specials");
     }
 
-    private void OpenConfigurePizzaDialog(PizzaSpecial special)
+    private async Task OpenConfigurePizzaDialog(PizzaSpecial special)
     {
         configuringPizza = new Pizza
             {
@@ -55,6 +56,20 @@ else
                 MaxWidth = MaxWidth.Small, Position = DialogPosition.TopCenter
             };
 
-        DialogService.Show<ConfigurePizzaDialog>(special.Name, parameters, options);
+        var result = await DialogService.Show<ConfigurePizzaDialog>(special.Name, parameters, options).Result;
+        if(result.Cancelled)
+        {
+            configuringPizza = null;
+        }
+        else
+        {
+            SubmitOrder();
+        }
     }
+    private void SubmitOrder(){
+        order.Pizzas.Add(configuringPizza);
+        configuringPizza = null;
+        Console.WriteLine(order.Pizzas.Count);
+    }
+
 }
