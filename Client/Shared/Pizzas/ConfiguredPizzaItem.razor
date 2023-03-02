@@ -1,7 +1,9 @@
 ﻿
 <MudPaper Class="ma-2 pa-2" Style="@($"color: {Colors.Grey.Lighten4}; background-color: #505050;")">
     <div class="d-flex flex-row align-center">
-        <MudText>@Pizza.Size" @Pizza.Special.Name</MudText>
+        <MudText>
+            <b>@Pizza.Size" @Pizza.Special.Name</b>
+        </MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"
                        @onclick="@(()=>RemoveConfiguredPizza(Pizza))"></MudIconButton>
