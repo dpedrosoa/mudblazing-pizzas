@@ -1,0 +1,46 @@
+﻿@page "/orders/{orderId:int}"
+@inject HttpClient HttpClient
+
+<MudContainer Class="my-4">
+
+    @if (invalidOrder)
+    {
+        <MudText Class="ma-auto">Invalid Order</MudText>
+    }
+    else if(order == null)
+    {
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Class="ma-auto" />
+    }
+    else
+    {
+        <MudPaper>
+            <MudText Typo="Typo.h5" GutterBottom="true" Class="px-5 py-3"
+                 Style="@($"color:{Colors.Red.Darken3}; background:{Colors.Grey.Lighten4};")">
+                Order Placed: @order.CreatedTime.ToLongDateString()
+            </MudText>
+            <div class="px-5 py-3">
+                <OrderReview Order="order"></OrderReview>
+            </div>
+        </MudPaper>
+        
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    Order order;
+    bool invalidOrder;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            order = await HttpClient.GetFromJsonAsync<Order>($"api/orders/{OrderId}");
+        }
+        catch(Exception ex)
+        {
+            invalidOrder = true;
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

@@ -20,12 +20,30 @@ namespace BlazingPizzas.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Order>>> GetAll()
         {
-            var orders = _unitOfWork.OrdersRepository.GetAll(
+            var orders = await _unitOfWork.OrdersRepository.GetAll(
                 include: x => x.Include(o => o.Pizzas),
                 orderBy: x => x.OrderByDescending(o => o.CreatedTime)
                 );
 
             return Ok(orders);
+        }
+
+        [HttpGet("{orderId}")]
+        public async Task<ActionResult<Order>> Get(int orderId)
+        {
+            var order = (await _unitOfWork.OrdersRepository.GetAll(
+                filter: x => x.Id == orderId,
+                include: x =>
+                       x.Include(o => o.Pizzas).ThenInclude(p => p.Special)
+                        .Include(o => o.Pizzas).ThenInclude(p => p.Toppings).ThenInclude(t => t.Topping),
+                orderBy: x => x.OrderByDescending(o => o.CreatedTime)
+                )
+                ).FirstOrDefault();
+
+            if(order == null)
+                return NotFound();
+
+            return Ok(order);
         }
 
         [HttpPost]

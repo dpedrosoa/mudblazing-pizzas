@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
 @inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Blazing Pizzas</PageTitle>
 
@@ -8,7 +9,7 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
     @if (specials == null)
     {
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Class="ma-auto" />
     }
     else
     {
@@ -35,7 +36,7 @@
 
 @*Order Sidebar*@
 <MudDrawer @bind-Open="@drawerOpen" Elevation="1" Anchor="Anchor.Right" Color="Color.Dark"
-           ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Persistent"
+           ClipMode="DrawerClipMode.Always"
            Class="d-flex flex-column" Width="300px">
     
     @if (order.Pizzas.Any())
@@ -126,9 +127,14 @@
 
     private async Task PlaceOrder()
     {
+        drawerOpen = false;
+
         var result = await HttpClient.PostAsJsonAsync<Order>("api/orders", order);
-        var orderId = await result.Content.ReadFromJsonAsync<int>();
-        order = new Order();
+        int orderId = await result.Content.ReadFromJsonAsync<int>();
+        order = new Order(); 
+
+        // navigate to order details
+        NavigationManager.NavigateTo($"orders/{orderId}");
     }
 
 }
