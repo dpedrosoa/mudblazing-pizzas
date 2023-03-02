@@ -15,7 +15,7 @@
         <MudGrid>
             @foreach (var special in specials)
             {
-                <MudItem xs="12" sm="6" md="4">
+                <MudItem sm="12" md="6" lg="4">
                     <MudCard Elevation="25" Style="height: 100%"
                      @onclick="@(()=>OpenConfigurePizzaDialog(special))">
 
@@ -35,24 +35,52 @@
 
 @*Order Sidebar*@
 <MudDrawer @bind-Open="@drawerOpen" Elevation="1" Anchor="Anchor.Right" Color="Color.Dark"
-           ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Persistent" >
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Your Order</MudText>
-    </MudDrawerHeader>
-    @foreach (var pizza in order.Pizzas)
+           ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Persistent"
+           Class="d-flex flex-column" Width="300px">
+    
+    @if (order.Pizzas.Any())
     {
-        <MudPaper Class="ma-2 pa-2" Style="@($"color: {Colors.Grey.Lighten4}; background-color: #505050;")">
-            <div class="d-flex flex-row align-center">
-                <MudText><b>@pizza.Size" @pizza.Special.Name</b></MudText>
-                <MudSpacer />
-                <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"></MudIconButton>
-            </div>
-            @foreach (var topping in pizza.Toppings)
+        <div class="flex-grow-1">
+            <MudDrawerHeader Class="px-2">
+                <MudText Typo="Typo.h6">Your Order</MudText>
+            </MudDrawerHeader>
+            @foreach (var pizza in order.Pizzas)
             {
-                <MudText Class="ml-3">+ @topping.Topping.Name</MudText>
+                <MudPaper Class="ma-2 pa-2" Style="@($"color: {Colors.Grey.Lighten4}; background-color: #505050;")">
+                    <div class="d-flex flex-row align-center">
+                        <MudText>@pizza.Size" @pizza.Special.Name</MudText>
+                        <MudSpacer />
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"></MudIconButton>
+                    </div>
+                    @foreach (var topping in pizza.Toppings)
+                    {
+                        <MudText Class="ml-3">+ @topping.Topping.Name</MudText>
+                    }
+                    <MudText Typo="Typo.h6"><b>$ @pizza.GetFormattedTotalPrice()</b></MudText>
+                </MudPaper>
             }
-            <MudText Typo="Typo.h6"><b>$ @pizza.GetFormattedTotalPrice()</b></MudText>
+        </div>
+        <MudPaper Class="flex-shrink-0 d-flex flex-row justify-space-between align-center px-2"
+              Style="@($"color:{Colors.Grey.Lighten4}; background:{Colors.Red.Darken3};")"
+              Elevation="0" Square="true" Height="4rem">
+            <MudText Class="align-center" Typo="Typo.h5">
+                Total: <b>$ @order.GetFormattedTotalPrice()</b>
+            </MudText>
+            <MudChip Variant="Variant.Filled" Color="Color.Warning" Size="Size.Large" 
+                 Style="@($"color:{Colors.Grey.Darken4};")" Icon="@Icons.Material.Filled.ShoppingCartCheckout">
+                <MudText Typo="Typo.h5">
+                    Order
+                </MudText>
+            </MudChip>
         </MudPaper>
+    }
+    else
+    {
+        <div class="ma-auto">
+            <MudText Style="@($"color: {Colors.Grey.Lighten4}; text-align: center")" Typo="Typo.h5">
+                Choose a pizza<br>to get started
+            </MudText>
+        </div>
     }
 </MudDrawer>
 
@@ -81,6 +109,7 @@
         var options = new DialogOptions()
             {
                 MaxWidth = MaxWidth.Small,
+                FullWidth = true,
                 Position = DialogPosition.TopCenter
             };
 
