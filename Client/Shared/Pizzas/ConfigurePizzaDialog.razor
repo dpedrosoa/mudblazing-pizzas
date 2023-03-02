@@ -43,11 +43,8 @@
                     @foreach (var toppingId in selectedToppings)
                     {
                         var topp = @toppings.Find(x => x.Id == toppingId);
-                        <MudChip Color="Color.Primary">
+                        <MudChip Color="Color.Primary" OnClose="@(()=>RemoveTopping(toppingId))">
                             @topp.Name - $ @topp.GetFormattedPrice()
-                            <MudIconButton Icon="@Icons.Material.Filled.Close" 
-                                Style="@($"color:{Colors.Grey.Lighten5}")"
-                                OnClick="@(()=>RemoveTopping(toppingId))"></MudIconButton>
                         </MudChip>
                     }
                 </div>
