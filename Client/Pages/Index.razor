@@ -40,17 +40,18 @@
     
     @if (order.Pizzas.Any())
     {
-        <div class="flex-grow-1">
             <MudDrawerHeader Class="px-2">
                 <MudText Typo="Typo.h6">Your Order</MudText>
             </MudDrawerHeader>
+        <div class="flex-grow-1 overflow-y-auto">
             @foreach (var pizza in order.Pizzas)
             {
                 <MudPaper Class="ma-2 pa-2" Style="@($"color: {Colors.Grey.Lighten4}; background-color: #505050;")">
                     <div class="d-flex flex-row align-center">
                         <MudText>@pizza.Size" @pizza.Special.Name</MudText>
                         <MudSpacer />
-                        <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" Style="@($"color: {Colors.Grey.Lighten4};")"
+                               @onclick="@(()=>RemoveConfiguredPizza(pizza))"></MudIconButton>
                     </div>
                     @foreach (var topping in pizza.Toppings)
                     {
@@ -120,14 +121,18 @@
         }
         else
         {
-            SubmitOrder();
+            AddConfiguredPizza();
         }
     }
-    private void SubmitOrder()
+    private void AddConfiguredPizza()
     {
         order.Pizzas.Add(configuringPizza);
         configuringPizza = null;
         Console.WriteLine(order.Pizzas.Count);
     }
 
+    private void RemoveConfiguredPizza(Pizza pizza)
+    {
+        order.Pizzas.Remove(pizza);
+    }
 }
