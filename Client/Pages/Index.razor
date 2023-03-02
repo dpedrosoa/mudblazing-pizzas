@@ -56,7 +56,8 @@
                 Total: <b>$ @order.GetFormattedTotalPrice()</b>
             </MudText>
             <MudChip Variant="Variant.Filled" Color="Color.Warning" Size="Size.Large" 
-                 Style="@($"color:{Colors.Grey.Darken4};")" Icon="@Icons.Material.Filled.ShoppingCartCheckout">
+                 Style="@($"color:{Colors.Grey.Darken4};")" Icon="@Icons.Material.Filled.ShoppingCartCheckout"
+                 @onclick="PlaceOrder">
                 <MudText Typo="Typo.h5">
                     Order
                 </MudText>
@@ -78,18 +79,18 @@
     List<PizzaSpecial> specials;
     Pizza configuringPizza;
     Order order = new Order();
-    bool drawerOpen = true;
+    bool drawerOpen;
 
     protected override async Task OnInitializedAsync()
     {
         specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>("api/specials");
+        drawerOpen = true;
     }
 
     private async Task OpenConfigurePizzaDialog(PizzaSpecial special)
     {
         configuringPizza = new Pizza
             {
-                SpecialId = special.Id,
                 Special = special
             };
         var parameters = new DialogParameters();
@@ -116,11 +117,18 @@
     {
         order.Pizzas.Add(configuringPizza);
         configuringPizza = null;
-        Console.WriteLine(order.Pizzas.Count);
     }
 
     private void RemoveConfiguredPizza(Pizza pizza)
     {
         order.Pizzas.Remove(pizza);
     }
+
+    private async Task PlaceOrder()
+    {
+        var result = await HttpClient.PostAsJsonAsync<Order>("api/orders", order);
+        var orderId = await result.Content.ReadFromJsonAsync<int>();
+        order = new Order();
+    }
+
 }

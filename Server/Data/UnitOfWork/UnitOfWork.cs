@@ -14,6 +14,8 @@ namespace BlazingPizzas.Server.Data.UnitOfWork
         }
 
         #region Repositories
+        private IRepository<Order> _OrdersRepository;
+        public IRepository<Order> OrdersRepository => _OrdersRepository ?? new Repository<Order>(_context);
 
         private IRepository<PizzaSpecial> _SpecialsRepository;
         public IRepository<PizzaSpecial> SpecialsRepository => _SpecialsRepository ?? new Repository<PizzaSpecial>(_context);
