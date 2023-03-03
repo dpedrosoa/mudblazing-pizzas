@@ -1,11 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="MyCustomTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="0">
+    <MudAppBar Elevation="0" Style="background-image: linear-gradient(rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0) 70%);">
         <NavMenu/>
     </MudAppBar>
    
@@ -15,5 +15,14 @@
 </MudLayout>
 
 @code {
-    
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = Colors.Red.Darken4,
+            
+            AppbarBackground = Colors.Red.Darken4,
+            AppbarText = Colors.Yellow.Lighten4,
+        }
+    };
 }
