@@ -21,7 +21,9 @@ namespace BlazingPizzas.Server.Controllers
         public async Task<ActionResult<List<Order>>> GetAll()
         {
             var orders = await _unitOfWork.OrdersRepository.GetAll(
-                include: x => x.Include(o => o.Pizzas),
+                include: x =>
+                       x.Include(o => o.Pizzas).ThenInclude(p => p.Special)
+                        .Include(o => o.Pizzas).ThenInclude(p => p.Toppings).ThenInclude(t => t.Topping),
                 orderBy: x => x.OrderByDescending(o => o.CreatedTime)
                 );
 

@@ -12,7 +12,7 @@
     </div>
 }
 
-<MudText Typo="Typo.h6">Total Price: @Order.GetFormattedTotalPrice()</MudText>
+<MudText Typo="Typo.h6">Total Price: $ @Order.GetFormattedTotalPrice()</MudText>
 
 @code {
     [Parameter] public Order Order { get; set; }

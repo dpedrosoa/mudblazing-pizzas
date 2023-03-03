@@ -35,6 +35,7 @@
     {
         try
         {
+            invalidOrder = false;
             order = await HttpClient.GetFromJsonAsync<Order>($"api/orders/{OrderId}");
         }
         catch(Exception ex)

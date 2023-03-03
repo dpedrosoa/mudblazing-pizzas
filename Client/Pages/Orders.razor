@@ -1,6 +1,50 @@
 ﻿@page "/orders"
-<h3>Orders</h3>
+@inject HttpClient HttpClient
+
+<MudContainer Class="my-4">
+    @if(orders == null)
+    {
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" Class="ma-auto" />
+    }
+    else if (!orders.Any())
+    {
+        <MudText>No orders placed</MudText>
+        <MudButton Href="" Variant="Variant.Filled" Color="Color.Success">
+            Order some pizza
+        </MudButton>
+    }
+    else{
+        @foreach (var order in orders)
+        {
+            <MudPaper Class="d-flex align-center justify-space-between px-5 py-3">
+                <div>
+                    <MudText Typo="Typo.h5" GutterBottom="true" Style="@($"color:{Colors.Red.Darken3};")">
+                        @order.CreatedTime.ToLongDateString()
+                    </MudText>
+                    <MudText>
+                        Items: <strong>@order.Pizzas.Count</strong>
+                        Total price: <strong>$ @order.GetFormattedTotalPrice()</strong>
+                    </MudText>
+                </div>
+                <div>
+                    <MudText>Status: Preparing</MudText>
+                </div>
+                <div>
+                    <MudButton Href="orders/{orderId}" Variant="Variant.Filled" Color="Color.Success">
+                        Track
+                    </MudButton>
+                </div>
+            </MudPaper>
+        }
+    }
+</MudContainer>
 
 @code {
+    List<Order> orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await HttpClient.GetFromJsonAsync<List<Order>>("api/orders");
+    }
 
 }
