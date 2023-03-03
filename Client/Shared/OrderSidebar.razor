@@ -1,0 +1,65 @@
+﻿@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<MudDrawer @bind-Open="@DrawerOpen" Elevation="1" Anchor="Anchor.Right" Color="Color.Dark"
+           ClipMode="DrawerClipMode.Always" Variant="DrawerVariant.Persistent"
+           Class="d-flex flex-column" Width="300px">
+
+    @if (Order.Pizzas.Any())
+    {
+        <MudDrawerHeader Class="px-2">
+            <MudText Typo="Typo.h6">Your Order</MudText>
+        </MudDrawerHeader>
+        <div class="flex-grow-1 overflow-y-auto">
+            @foreach (var pizza in Order.Pizzas)
+            {
+                <ConfiguredPizzaItem Pizza="pizza" OnRemoveConfiguredPizza="RemoveConfiguredPizza" />
+            }
+        </div>
+        <MudPaper Class="flex-shrink-0 d-flex flex-row justify-space-between align-center px-2"
+              Style="@($"color:{Colors.Grey.Lighten4}; background:{Colors.Red.Darken3};")"
+              Elevation="0" Square="true" Height="4rem">
+            <MudText Class="align-center" Typo="Typo.h5">
+                Total: <b>$ @Order.GetFormattedTotalPrice()</b>
+            </MudText>
+            <MudChip Variant="Variant.Filled" Color="Color.Warning" Size="Size.Large"
+                 Style="@($"color:{Colors.Grey.Darken4};")" Icon="@Icons.Material.Filled.ShoppingCartCheckout"
+                 @onclick="PlaceOrder">
+                <MudText Typo="Typo.h5">
+                    Order
+                </MudText>
+            </MudChip>
+        </MudPaper>
+    }
+    else
+    {
+        <div class="ma-auto">
+            <MudText Style="@($"color: {Colors.Grey.Lighten4}; text-align: center")" Typo="Typo.h5">
+                Choose a pizza<br>to get started
+            </MudText>
+        </div>
+    }
+</MudDrawer>
+
+@code {
+    [Parameter] public Order Order { get; set; } = new Order();
+    [Parameter] public bool DrawerOpen { get; set; }
+
+    private void RemoveConfiguredPizza(Pizza pizza)
+    {
+        Order.Pizzas.Remove(pizza);
+    }
+
+    private async Task PlaceOrder()
+    {
+        //drawerOpen = false;
+
+        var result = await HttpClient.PostAsJsonAsync<Order>("api/orders", Order);
+        int orderId = await result.Content.ReadFromJsonAsync<int>();
+        Order = new Order();
+
+        // navigate to order details
+        NavigationManager.NavigateTo($"orders/{orderId}");
+    }
+
+}
