@@ -1,8 +1,9 @@
 # MudBlazing Pizzas
 
-Blazor web application to order pizzas
+Web Assembly with ASP.NET core hosted application to order pizzas. 
 
-Web Assembly with ASP.NET core hosted. 
+This is a practice project I am currently working on, following the 
+[Blazor - app building workshop tutorial](https://github.com/dotnet-presentations/blazor-workshop) 
+by .NET Foundation, Blazing Pizza. 
 
-User interface: MudBlazor component library
-Dasabase: Sqlite
+The user interface is implemented using MudBlazor component library.
