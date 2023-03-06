@@ -19,7 +19,9 @@ namespace BlazingPizzas.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Topping>>> Get()
         {
-            var toppings = await _unitOfWork.ToppingsRepository.GetAll();
+            var toppings = await _unitOfWork.ToppingsRepository.GetAll(
+                orderBy: x => x.OrderBy(t => t.Name)
+                );
             return Ok(toppings);
         }
     }
